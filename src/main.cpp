@@ -5,7 +5,7 @@ int main() {
     sf::RenderWindow window(sf::VideoMode(sf::Vector2u(800, 600)), "Unicredit");
     window.setFramerateLimit(60);
 
-    Player player;
+    Player player(window.getSize());
 
     while (window.isOpen()) {
 

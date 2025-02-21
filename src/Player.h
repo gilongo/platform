@@ -5,15 +5,14 @@
 
 class Player {
     public:
-        Player(sf::Vector2u windowSize, sf::RectangleShape& floor);
-        void update();
+        Player(sf::Vector2u windowSize);
+        void update(const std::vector<sf::RectangleShape>& platforms);
         sf::RectangleShape& getShape();
         bool isDead() const;
 
     private:
         sf::RectangleShape shape;
         sf::Vector2u windowSize;
-        sf::RectangleShape& floor;
 
         float speed = 5.0f;
         float gravity = 0.5f;
@@ -22,7 +21,7 @@ class Player {
         bool isOnGround = false;
         bool dead = false;
 
-        void handleCollisions();
+        void handleCollisions(const std::vector<sf::RectangleShape>& platforms);
         void applyGravity();
         void jump();
         void checkDeath();

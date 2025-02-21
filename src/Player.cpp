@@ -1,12 +1,12 @@
 #include "Player.h"
 
-Player::Player(sf::Vector2u windowSize, sf::RectangleShape& floor) : windowSize(windowSize), floor(floor) {
+Player::Player(sf::Vector2u windowSize) : windowSize(windowSize) {
     shape.setSize(sf::Vector2f(50.0f, 50.0f));
     shape.setFillColor(sf::Color::Red);
-    shape.setPosition(sf::Vector2f(windowSize.x / 2.0f, floor.getPosition().y - shape.getSize().y));
+    shape.setPosition(sf::Vector2f(windowSize.x / 2.0f, windowSize.y - 150.0f));
 }
 
-void Player::update() {
+void Player::update(const std::vector<sf::RectangleShape>& platforms) {
     if (dead) return;
 
     if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::Left)) {
@@ -21,7 +21,7 @@ void Player::update() {
     }
 
     applyGravity();
-    handleCollisions();
+    handleCollisions(platforms);
     checkDeath();
 }
 
@@ -50,17 +50,22 @@ bool checkCollision(const sf::FloatRect& rect1, const sf::FloatRect& rect2) {
     );
 }
 
-void Player::handleCollisions() {
+void Player::handleCollisions(const std::vector<sf::RectangleShape>& platforms) {
+    isOnGround = false;
     sf::FloatRect playerBounds = shape.getGlobalBounds();
-    sf::FloatRect floorBounds = floor.getGlobalBounds();
 
     sf::Vector2f position = shape.getPosition();
     sf::Vector2f size = shape.getSize();
 
-    if (checkCollision(playerBounds, floorBounds) && velocityY >= 0) {
-        shape.setPosition(sf::Vector2f(playerBounds.position.x, floorBounds.position.y - playerBounds.size.y));
-        velocityY = 0.0f;
-        isOnGround = true;
+    for (const auto& platform: platforms) {
+        sf::FloatRect platformBounds = platform.getGlobalBounds();
+
+        if (checkCollision(playerBounds, platformBounds) && velocityY >= 0) {
+            shape.setPosition(sf::Vector2f(playerBounds.position.x, platformBounds.position.y - playerBounds.size.y));
+            velocityY = 0.0f;
+            isOnGround = true;
+            break;
+        }
     }
 
     if (position.x < 0) {

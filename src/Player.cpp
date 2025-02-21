@@ -9,19 +9,23 @@ Player::Player(sf::Vector2u windowSize) : windowSize(windowSize) {
 void Player::update(const std::vector<sf::RectangleShape>& platforms) {
     if (dead) return;
 
+    velocityX = 0.0f;
     if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::Left)) {
-        shape.move(sf::Vector2(-speed, 0.0f));
+        velocityX = -speed;
     }
     if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::Right)) {
-        shape.move(sf::Vector2(speed, 0.0f));
+        velocityX = speed;
     }
+
+    shape.move(sf::Vector2f(velocityX, 0));
+    handleHorizontalCollisions(platforms);
     
     if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::Space) && isOnGround) {
         jump();
     }
 
     applyGravity();
-    handleCollisions(platforms);
+    handleVerticalCollisions(platforms);
     checkDeath();
 }
 
@@ -50,29 +54,41 @@ bool checkCollision(const sf::FloatRect& rect1, const sf::FloatRect& rect2) {
     );
 }
 
-void Player::handleCollisions(const std::vector<sf::RectangleShape>& platforms) {
-    isOnGround = false;
+void Player::handleHorizontalCollisions(const std::vector<sf::RectangleShape>& platforms) {
     sf::FloatRect playerBounds = shape.getGlobalBounds();
-
-    sf::Vector2f position = shape.getPosition();
-    sf::Vector2f size = shape.getSize();
 
     for (const auto& platform: platforms) {
         sf::FloatRect platformBounds = platform.getGlobalBounds();
 
-        if (checkCollision(playerBounds, platformBounds) && velocityY >= 0) {
-            shape.setPosition(sf::Vector2f(playerBounds.position.x, platformBounds.position.y - playerBounds.size.y));
-            velocityY = 0.0f;
-            isOnGround = true;
-            break;
+        if (checkCollision(playerBounds, platformBounds)) {
+            if(velocityX > 0) {
+                shape.setPosition(sf::Vector2f(platformBounds.position.x - playerBounds.size.x, playerBounds.position.y));
+            }
+            else if(velocityX < 0) {
+                shape.setPosition(sf::Vector2f(platformBounds.position.x + platformBounds.size.x, playerBounds.position.y));
+            }
         }
     }
+}
 
-    if (position.x < 0) {
-        shape.setPosition(sf::Vector2f(0, position.y));
-    }
-    if (position.x + size.x > windowSize.x) {
-        shape.setPosition(sf::Vector2f(windowSize.x - size.x, position.y));
+void Player::handleVerticalCollisions(const std::vector<sf::RectangleShape>& platforms) {
+    sf::FloatRect playerBounds = shape.getGlobalBounds();
+    isOnGround = false;
+
+    for(const auto& platform: platforms) {
+        sf::FloatRect platformBounds = platform.getGlobalBounds();
+
+        if(checkCollision(playerBounds, platformBounds)) {
+            if(velocityY > 0) {
+                shape.setPosition(sf::Vector2f(playerBounds.position.x, platformBounds.position.y - playerBounds.size.y));
+                velocityY = 0.0f;
+                isOnGround = true;
+            }
+            else if (velocityY < 0) {
+                shape.setPosition(sf::Vector2f(playerBounds.position.x, platformBounds.position.y + playerBounds.size.x));
+                velocityY = 0.0f;
+            }
+        }
     }
 }
 

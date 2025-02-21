@@ -11,10 +11,17 @@ class Player {
 
     private:
         sf::RectangleShape shape;
-        float speed = 5.0f;
         sf::Vector2u windowSize;
 
+        float speed = 5.0f;
+        float gravity = 0.5f;
+        float velocityY = 0.0f;
+        float jumpStrength = -12.0f;
+        bool isOnGround = false;
+
         void handleWindowCollision();
+        void applyGravity();
+        void jump();
 };
 
 #endif

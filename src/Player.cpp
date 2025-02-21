@@ -3,11 +3,14 @@
 Player::Player(sf::Vector2u windowSize) : windowSize(windowSize) {
     shape.setSize(sf::Vector2f(50.0f, 50.0f));
     shape.setFillColor(sf::Color::Red);
-    shape.setPosition(sf::Vector2f(windowSize.x / 2.0f, windowSize.y - 150.0f));
+    reset();
 }
 
 void Player::update(const std::vector<sf::RectangleShape>& platforms) {
-    if (dead) return;
+    if (dead) {
+        updateDeathTimer();
+        return;
+    }
 
     velocityX = 0.0f;
     if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::Left)) {
@@ -95,7 +98,21 @@ void Player::handleVerticalCollisions(const std::vector<sf::RectangleShape>& pla
 void Player::checkDeath() {
     if (shape.getPosition().y > windowSize.y) {
         dead = true;
+        deathTimer.restart();
     }
+}
+
+void Player::updateDeathTimer() {
+    if(deathTimer.getElapsedTime().asSeconds() >= respawnDeplay) {
+        reset();
+    }
+}
+
+void Player::reset() {
+    dead = false;
+    velocityX = 0.0f;
+    velocityY = 0.0f;
+    shape.setPosition(sf::Vector2f(windowSize.x / 2.0f, windowSize.y - 150.0f));
 }
 
 sf::RectangleShape& Player::getShape() {

@@ -22,11 +22,16 @@ class Player {
         bool isOnGround = false;
         bool dead = false;
 
+        sf::Clock deathTimer;
+        const float respawnDeplay = 3.0f;
+
         void handleHorizontalCollisions(const std::vector<sf::RectangleShape>& platforms);
         void handleVerticalCollisions(const std::vector<sf::RectangleShape>& platforms);
         void applyGravity();
         void jump();
         void checkDeath();
+        void updateDeathTimer();
+        void reset();
 };
 
 #endif

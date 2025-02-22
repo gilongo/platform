@@ -4,7 +4,11 @@
 #include <iostream>
 
 int main() {
-    sf::RenderWindow window(sf::VideoMode(sf::Vector2u(800, 600)), "Unicredit");
+
+    const unsigned int windowWidth = 800;
+    const unsigned int windowHeight = 600;
+
+    sf::RenderWindow window(sf::VideoMode(sf::Vector2u(windowWidth, windowHeight)), "Platform");
     window.setFramerateLimit(60);
 
     PlatformManager platformManager;
@@ -15,6 +19,11 @@ int main() {
 
     Player player(window.getSize());
 
+    sf::View view(sf::FloatRect(sf::Vector2f(0, 0), sf::Vector2f(windowWidth, windowHeight)));
+    window.setView(view);
+
+    float levelWidth = 1200.0f;
+
     while (window.isOpen()) {
         while(auto event = window.pollEvent()) {
             if (event->is<sf::Event::Closed>()) {
@@ -23,6 +32,20 @@ int main() {
         }
 
         player.update(platformManager.getPlatforms());
+
+        sf::Vector2f playerPos = player.getShape().getPosition();
+        float halfWindowWidth = windowWidth / 2.0f;
+
+        float viewCenterX = playerPos.x;
+
+        if (viewCenterX < halfWindowWidth) {
+            viewCenterX = halfWindowWidth;
+        } else if (viewCenterX > levelWidth - halfWindowWidth) {
+            viewCenterX = levelWidth - halfWindowWidth;
+        }
+
+        view.setCenter(sf::Vector2f(viewCenterX, windowHeight / 2.0f));
+        window.setView(view);
 
         window.clear(player.isDead() ? sf::Color::Red : sf::Color::Cyan);
 

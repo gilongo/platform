@@ -10,6 +10,6 @@ include_directories(/opt/homebrew/include)
 link_directories(/opt/Homebrew/lib)
 
 add_executable(platform ${SOURCES})
-target_include_directories(platform PRIVATE src)
+target_include_directories(platform PRIVATE src src/heads)
 
 target_link_libraries(platform sfml-graphics sfml-window sfml-system)

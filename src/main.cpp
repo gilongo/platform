@@ -11,6 +11,8 @@ int main() {
     sf::RenderWindow window(sf::VideoMode(sf::Vector2u(windowWidth, windowHeight)), "Platform");
     window.setFramerateLimit(60);
 
+    // gestione livello 
+
     PlatformManager platformManager;
     if (!platformManager.loadPlatformsFromFile("../platforms.txt")) {
         std::cerr << "Errore nel caricamento delle piattaforme." << std::endl;

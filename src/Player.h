@@ -13,6 +13,7 @@ class Player {
     private:
         sf::RectangleShape shape;
         sf::Vector2u windowSize;
+        sf::Vector2f checkpoint;
 
         float speed = 5.0f;
         float gravity = 0.5f;
@@ -22,6 +23,7 @@ class Player {
         bool isOnGround = false;
         bool dead = false;
 
+        int lives = 3;
         sf::Clock deathTimer;
         const float respawnDeplay = 3.0f;
 
@@ -29,6 +31,8 @@ class Player {
         void handleVerticalCollisions(const std::vector<sf::RectangleShape>& platforms);
         void applyGravity();
         void jump();
+        void setCheckpoint(sf::Vector2f coordinates);
+        void respawnAtCheckpoint();
         void checkDeath();
         void updateDeathTimer();
         void reset();

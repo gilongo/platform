@@ -4,6 +4,7 @@ Player::Player(sf::Vector2u windowSize) : windowSize(windowSize) {
     shape.setSize(sf::Vector2f(50.0f, 50.0f));
     shape.setFillColor(sf::Color::Red);
     reset();
+    setCheckpoint(shape.getPosition());
 }
 
 void Player::update(const std::vector<sf::RectangleShape>& platforms) {
@@ -95,9 +96,22 @@ void Player::handleVerticalCollisions(const std::vector<sf::RectangleShape>& pla
     }
 }
 
+void Player::setCheckpoint(sf::Vector2f coordinates) {
+    checkpoint = coordinates;
+}
+
+void Player::respawnAtCheckpoint() {
+    shape.setPosition(sf::Vector2f(checkpoint.x, checkpoint.y));
+}
+
 void Player::checkDeath() {
     if (shape.getPosition().y > windowSize.y) {
-        dead = true;
+        lives--;
+        if(lives > 0) {
+            respawnAtCheckpoint();
+        } else {
+            dead = true;
+        }
         deathTimer.restart();
     }
 }
@@ -110,9 +124,10 @@ void Player::updateDeathTimer() {
 
 void Player::reset() {
     dead = false;
+    lives = 3;
     velocityX = 0.0f;
     velocityY = 0.0f;
-    shape.setPosition(sf::Vector2f(windowSize.x / 2.0f, windowSize.y - 150.0f));
+    shape.setPosition(sf::Vector2f(30.0f, windowSize.y - 150.0f));
 }
 
 sf::RectangleShape& Player::getShape() {
